@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/NetChat/NetChat.iml" filepath="$PROJECT_DIR$/NetChat/NetChat.iml" />
       <module fileurl="file://$PROJECT_DIR$/PullStream.iml" filepath="$PROJECT_DIR$/PullStream.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/p2pclient/p2pclient.iml" filepath="$PROJECT_DIR$/p2pclient/p2pclient.iml" />
     </modules>
   </component>
 </project>

@@ -3,8 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
-    android:background="#77777777">
+    android:layout_height="72dp"
+    android:layout_marginLeft="60dp"
+    android:layout_marginRight="60dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/common_item_bg_selector"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <TextView
         android:id="@+id/app_name"
@@ -12,16 +18,21 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
-        android:text="非凡任务管理器" />
+        android:text="非凡任务管理器"
+        android:textColor="#FFFFFF"
+        android:textSize="24dp" />
 
 
     <TextView
-        android:id="@+id/app_created_date"
+        android:id="@+id/app_other_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="32dp"
-        android:text="2012-05" />
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_below="@+id/app_name"
+        android:textColor="#ECECEC"
+        android:textSize="18dp"
+        android:visibility="visible" />
 
 
     <TextView
@@ -31,6 +42,9 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="24dp"
         android:layout_marginLeft="10dp"
-        android:text="cn.feifan.task" />
+        android:text="cn.feifan.task"
+        android:textColor="#ECECEC"
+        android:textSize="24dp"
+        android:visibility="gone" />
 
 </RelativeLayout>
