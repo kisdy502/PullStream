@@ -37,6 +37,15 @@
             android:layout_weight="1"
             android:onClick="clickMenu"
             android:text="menu3" />
+
+        <Button
+            android:id="@+id/menu4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:onClick="clickMenu"
+            android:text="menu4" />
     </LinearLayout>
     <TextView
         android:id="@+id/device_info"

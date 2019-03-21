@@ -10,26 +10,31 @@ import java.security.MessageDigest;
 import cn.fm.p2p.download.DownloadCallback;
 import cn.fm.p2p.download.DownloadInfo;
 import cn.fm.p2p.download.DownloadManager;
+import cn.fm.p2p.download.DownloadManagerOld;
 
 
 public class HttpTool {
-    public static void checkAndDownloadFiles(String dir, String files, DownloadCallback callback) {
+    public static void checkAndDownloadFiles(String dir, String files, DownloadManager.ProgressListener
+            listener) {
         File[] fileArrays = getFiles(dir, files);
         if (fileArrays != null && fileArrays.length > 0) {
             for (int i = 0, n = fileArrays.length; i < n; i++) {
                 File file = fileArrays[i];
                 System.out.println("file:" + file.getAbsolutePath());
                 if (!file.exists()) {
-                    httpDownloadFile(dir, file, callback);
+                    httpDownloadFile(dir, file, listener);
                 }
             }
         }
     }
 
-    private static void httpDownloadFile(String dir, File file, DownloadCallback callback) {
+    private static void httpDownloadFile(String dir, File file, DownloadManager.ProgressListener
+            listener) {
         String url = getUrlByName(file.getName());
         DownloadInfo downloadInfo = new DownloadInfo(url, dir, file.getName());
-        boolean result = DownloadManager.getInstance().startDownload(downloadInfo, callback);
+        boolean result = DownloadManager.getInstance().download(downloadInfo.getDownloadUrl(),
+                downloadInfo.getSaveDir(), downloadInfo.getSaveFileName(),
+                listener);
         if (result) {
             String md5 = getFileMD5String(file);
             System.out.println("downloadInfo md5:" + md5);

@@ -132,6 +132,8 @@ public class MainActivity extends Activity implements StunClient.StunClientListe
             new GetDeviceListTask().execute(mDevice);
         } else if (id == R.id.menu3) {
             startActivity(new Intent(this, SettingsActivity.class));
+        } else if (id == R.id.menu4) {
+                
         }
     }
 

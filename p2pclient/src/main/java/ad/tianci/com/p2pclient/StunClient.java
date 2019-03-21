@@ -155,13 +155,14 @@ public class StunClient {
                     mSocket.receive(responseMsg);
 
                     String content = new String(responseMsg.getData());
+                    Log.d(TAG, "content:" + content);
                     if (content.startsWith("ok")) {
                         Log.d(TAG, "P2P communication OK");
                         mIsHolePunchingSuccessful = true;
                         if (mListener != null) {
                             mListener.onHolePunchingSucceed();
                         }
-                    } else if (content.startsWith("test|"))  {
+                    } else if (content.startsWith("test|")) {
                         if (mListener != null) {
                             mListener.onMessageReceived(content.substring(5));
                         }

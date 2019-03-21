@@ -1,6 +1,7 @@
 package cn.fm.p2p.item;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,9 +15,11 @@ import java.io.File;
 import cn.fm.p2p.App;
 import cn.fm.p2p.R;
 import cn.fm.p2p.UploadHelper;
+import cn.fm.p2p.activity.DownloadListActivity;
 import cn.fm.p2p.bean.AppInfo;
 import cn.fm.p2p.download.DownloadCallback;
 import cn.fm.p2p.download.DownloadInfo;
+import cn.fm.p2p.download.DownloadManager;
 import cn.fm.udp.LogWriter;
 import cn.fm.udp.Constant;
 import cn.fm.udp.HttpTool;
@@ -127,8 +130,11 @@ public class ItemViewAppInfo extends ItemViewBinder<AppInfo, ItemViewAppInfo.Vie
                             UploadHelper.upload();
                         }
                     }.start();
+                } else if (id.equalsIgnoreCase("005")) {
+                    Intent intent = new Intent(App.getInstance(), DownloadListActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    App.getInstance().startActivity(intent);
                 }
-
             }
         });
 
@@ -147,66 +153,66 @@ public class ItemViewAppInfo extends ItemViewBinder<AppInfo, ItemViewAppInfo.Vie
         }
     }
 
-    private void startp2pDonwloadAndLogin(final ViewHolder holder, final String dir, final String
-            strfiles) {
+    private void startp2pDonwloadAndLogin(final ViewHolder holder, final String dir, final String strfiles) {
         new Thread() {
             @Override
             public void run() {
-                HttpTool.checkAndDownloadFiles(dir, strfiles, new DownloadCallback() {
+                HttpTool.checkAndDownloadFiles(dir, strfiles, new DownloadManager.ProgressListener() {
+
 
                     boolean tsOk = false, zipOk = false;
 
                     @Override
-                    public void downloadStart(DownloadInfo downloadInfo) {
-
+                    public void onFailed(final String downloadUrl, int result, String desc) {
+                        holder.itemView.post(new Runnable() {
+                            @SuppressLint("WrongConstant")
+                            @Override
+                            public void run() {
+                                Toast.makeText(App.getInstance(), downloadUrl + "下载失败", 1).show();
+                            }
+                        });
                     }
 
                     @Override
-                    public void downloadProgress(final DownloadInfo downloadInfo, final float progress) {
+                    public void onUpdate(String downloadUrl, long bytesRead, long contentLength,
+                                         boolean done) {
+                        final float progress = 100 * bytesRead * 1.0f / contentLength;
                         holder.tvCreated.post(new Runnable() {
                             @Override
                             public void run() {
-                                holder.tvCreated.setText("下载进度:" + String.valueOf(progress) + "%");
+                                holder.tvCreated.setText("下载进度:" + progress + "%");
                             }
                         });
-                    }
-
-                    @Override
-                    public void downloadSuccess(final DownloadInfo downloadInfo) {
-                        holder.itemView.post(new Runnable() {
-                            @SuppressLint("WrongConstant")
-                            @Override
-                            public void run() {
-                                Toast.makeText(App.getInstance(), downloadInfo
-                                        .getSaveFileName() + "下载完成", 1).show();
+                        if (done) {
+                            holder.itemView.post(new Runnable() {
+                                @SuppressLint("WrongConstant")
+                                @Override
+                                public void run() {
+                                    Toast.makeText(App.getInstance(), "下载完成", 1).show();
+                                }
+                            });
+                            File[] files = HttpTool.getFiles(dir, strfiles);
+                            if (allDownloaded(files)) {
+                                ServiceManager servicejanManager = new ServiceManager(App.getInstance());
+                                servicejanManager.startService(Constant.SERVERHOST, dir, strfiles, Constant.SC_LOGIN);
                             }
-                        });
-
-                        if (downloadInfo.getSaveFileName().equalsIgnoreCase(Constant.FILE_MP4)) {
-                            tsOk = true;
-                        } else if (downloadInfo.getSaveFileName().equalsIgnoreCase(Constant.FILE_ZIP)) {
-                            zipOk = true;
                         }
 
-                        if (tsOk && zipOk) {
-                            ServiceManager servicejanManager = new ServiceManager(App.getInstance());
-                            servicejanManager.startService(Constant.SERVERHOST, dir, strfiles, Constant.SC_LOGIN);
-                        }
                     }
 
-                    @Override
-                    public void downloadFailed(final DownloadInfo downloadInfo) {
-                        holder.itemView.post(new Runnable() {
-                            @SuppressLint("WrongConstant")
-                            @Override
-                            public void run() {
-                                Toast.makeText(App.getInstance(), downloadInfo
-                                        .getSaveFileName() + "下载失败", 1).show();
-                            }
-                        });
-                    }
                 });
             }
         }.start();
+    }
+
+    private boolean allDownloaded(File[] files) {
+        if (files == null || files.length == 0)
+            return true;
+        for (File file : files) {
+            if (!file.exists()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

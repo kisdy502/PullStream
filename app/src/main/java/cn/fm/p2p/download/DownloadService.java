@@ -37,10 +37,10 @@ public class DownloadService extends IntentService {
             final String action = intent.getAction();
             if (ACTION_START_DOWNLOAD.equals(action)) {
                 final DownloadInfo downloadInfo = intent.getParcelableExtra(EXTRA_PARAM1);
-                DownloadManager.getInstance().startDownload(downloadInfo, null);
+                DownloadManagerOld.getInstance().startDownload(downloadInfo, null);
             } else if (ACTION_PAUSE_DOWNLOAD.equals(action)) {
                 final DownloadInfo downloadInfo = intent.getParcelableExtra(EXTRA_PARAM1);
-                DownloadManager.getInstance().cancel(downloadInfo.getDownloadUrl());
+                DownloadManagerOld.getInstance().cancel(downloadInfo.getDownloadUrl());
             }
         }
     }

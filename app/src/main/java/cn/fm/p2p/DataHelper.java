@@ -89,10 +89,17 @@ public class DataHelper {
         appInfo04.setAppPackage("cn.aikan.live");
         appInfo04.setAppDate("2019-01");
 
+        AppInfo appInfo05 = new AppInfo();
+        appInfo05.setId("005");
+        appInfo05.setAppName("下载功能测试");
+        appInfo05.setAppPackage("cn.aikan.live");
+        appInfo05.setAppDate("2019-01");
+
         list.add(appInfo00);
         list.add(appInfo02);
         list.add(appInfo03);
         list.add(appInfo04);
+        list.add(appInfo05);
 
     }
 

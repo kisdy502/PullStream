@@ -8,7 +8,6 @@ import android.os.Parcelable;
  */
 
 public class DownloadInfo implements Parcelable {
-    public static final long TOTAL_ERROR = -1;
 
     public DownloadInfo() {
     }
