@@ -56,6 +56,8 @@ public class MainActivity extends Activity implements StunClient.StunClientListe
 
     private TextView tvDeviceInfo;
 
+    private Device selecteDevice;
+
     /**
      * Called when the activity is first created.
      */
@@ -67,6 +69,14 @@ public class MainActivity extends Activity implements StunClient.StunClientListe
         tvDeviceInfo = findViewById(R.id.device_info);
         mDeviceListView = (ListView) findViewById(R.id.device_list);
         mDeviceListView.setOnCreateContextMenuListener(this);
+        mDeviceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final Device device = ((Device) mDeviceListView.getAdapter().getItem(position));
+                new ConnectToRemoteDeviceTask().execute(device);
+                selecteDevice = device;
+            }
+        });
 
         StunClient.getInstance().setStunClientListener(this);
     }
@@ -133,7 +143,31 @@ public class MainActivity extends Activity implements StunClient.StunClientListe
         } else if (id == R.id.menu3) {
             startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.menu4) {
-                
+            if (selecteDevice == null) return;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Input the message");
+            final EditText editText = (EditText) LayoutInflater.from(this).inflate(R.layout.input, null);
+            builder.setView(editText);
+            builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            StunClient.getInstance().testP2P(selecteDevice, editText.getText().toString());
+                        }
+                    }.start();
+                    dialog.dismiss();
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.create().show();
         }
     }
 
@@ -252,11 +286,14 @@ public class MainActivity extends Activity implements StunClient.StunClientListe
                 response.read(buf);
 
                 JSONObject result = new JSONObject(buf.toString());
-                String status = result.getString("status");
+                Log.d("test", "response:" + response.toString());
+                //String status = result.getString("status");
 
-                if (status.equals("success")) {
+                int code = result.getInt("code");
+                if (code == 0) {
                     return true;
                 }
+
             } catch (HttpClientException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -289,13 +326,15 @@ public class MainActivity extends Activity implements StunClient.StunClientListe
             ArrayList<Device> deviceList = null;
 
             try {
+                String url = mRegistrationServer + "/queryAll";
+                Log.d("test", "getDevice url:" + url);
                 HttpClient hc = new HttpClient(MainActivity.this);
-                HttpResponse response = hc.get(mRegistrationServer + "/get").execute();
+                HttpResponse response = hc.get(url).execute();
                 StringBuilder buf = new StringBuilder();
                 response.read(buf);
 
                 JSONObject result = new JSONObject(buf.toString());
-                JSONArray deviceListObj = result.getJSONArray("devices");
+                JSONArray deviceListObj = result.getJSONArray("data");
                 deviceList = new ArrayList<Device>();
                 for (int i = 0; i < deviceListObj.length(); i++) {
                     JSONObject deviceObj = deviceListObj.getJSONObject(i);

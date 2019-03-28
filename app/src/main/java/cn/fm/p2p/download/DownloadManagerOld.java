@@ -2,13 +2,13 @@ package cn.fm.p2p.download;
 
 import android.util.Log;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
-import cn.fm.udp.LogWriter;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -107,7 +107,6 @@ public class DownloadManagerOld {
                             callback.downloadProgress(downloadInfo, 100f * process / contentLength);
                         }
                         fos.flush();
-                        LogWriter.getInstance().info("downloaded:" + downloadInfo.toString());
                         callback.downloadSuccess(downloadInfo);
                         return true;
                     } else {
@@ -124,8 +123,8 @@ public class DownloadManagerOld {
             ex.printStackTrace();
             callback.downloadFailed(downloadInfo, DownloadCallback.FAILED_IO_EXCEPTION);
         } finally {
-            IOUtils.close(fos);
-            IOUtils.close(is);
+            close(fos);
+            close(is);
             mCallMap.remove(downloadInfo.getDownloadUrl());
         }
         return false;
@@ -159,6 +158,18 @@ public class DownloadManagerOld {
         }
     }
 
+    private void close(Closeable... closeable) {
+        for (Closeable c : closeable) {
+            if (c != null) {
+                try {
+                    c.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 
     private DownloadCallback mCallback = new DownloadCallback() {
 
@@ -184,4 +195,21 @@ public class DownloadManagerOld {
 
 
     };
+
+    public interface DownloadCallback {
+
+        int FAILED_EXIST = 0;
+        int FAILED_IO_EXCEPTION = 1;
+        int FAILED_EMPTY_RESPONSE = 2;
+        int FAILED_EMPTY_STREAM = 3;
+        int FAILED_RESPONSE_CODE = 4;
+
+        void downloadStart(DownloadInfo downloadInfo);
+
+        void downloadProgress(DownloadInfo downloadInfo, float progress);
+
+        void downloadSuccess(DownloadInfo downloadInfo);
+
+        void downloadFailed(DownloadInfo downloadInfo, int failedCode);
+    }
 }

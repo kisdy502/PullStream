@@ -68,7 +68,7 @@ public class DownloadManager {
         long contentLength = getContentLength(downloadUrl);
         if (contentLength < TOTAL_ERROR) {
             listener.onFailed(downloadUrl, contentLength == REQUEST_EXCEPTION ? ProgressListener
-                    .FAILED_IO_EXCEPTION : ProgressListener.FAILED_RESPONSE_CODE, "");
+                    .FAILED_IO_EXCEPTION : ProgressListener.FAILED_RESPONSE_CODE, "Http请求文件长度出错");
             return false;
         }
         File file = new File(saveDir, saveFileName); // 设置路径

@@ -1,4 +1,4 @@
-package cn.fm.udp;
+package cn.fm.p2p;
 
 import android.text.TextUtils;
 
@@ -7,10 +7,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
 
-import cn.fm.p2p.download.DownloadCallback;
 import cn.fm.p2p.download.DownloadInfo;
 import cn.fm.p2p.download.DownloadManager;
-import cn.fm.p2p.download.DownloadManagerOld;
+import cn.fm.udp.Constant;
 
 
 public class HttpTool {
@@ -33,8 +32,7 @@ public class HttpTool {
         String url = getUrlByName(file.getName());
         DownloadInfo downloadInfo = new DownloadInfo(url, dir, file.getName());
         boolean result = DownloadManager.getInstance().download(downloadInfo.getDownloadUrl(),
-                downloadInfo.getSaveDir(), downloadInfo.getSaveFileName(),
-                listener);
+                downloadInfo.getSaveDir(), downloadInfo.getSaveFileName(), listener);
         if (result) {
             String md5 = getFileMD5String(file);
             System.out.println("downloadInfo md5:" + md5);

@@ -17,6 +17,14 @@ import okio.ForwardingSource;
 import okio.Okio;
 import okio.Source;
 
+/**
+ * @desc okhttp官方带进度的下载demo
+ * @created
+ * @createdDate 2019/3/27 10:42
+ * @updated
+ * @updatedDate 2019/3/27 10:42
+ *
+ **/
 public class Progress {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)

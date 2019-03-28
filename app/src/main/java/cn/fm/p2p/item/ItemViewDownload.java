@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import cn.fm.p2p.R;
 import cn.fm.p2p.download.DownloadInfo;
-import cn.fm.p2p.download.DownloadManagerOld;
 import cn.fm.p2p.download.DownloadManager;
 import me.drakeet.multitype.ItemViewBinder;
 

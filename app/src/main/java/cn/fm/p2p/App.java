@@ -3,7 +3,10 @@ package cn.fm.p2p;
 import android.app.Application;
 import android.content.Intent;
 
+import java.io.File;
+
 import cn.fm.p2p.log.LogService;
+import cn.fm.udp.LogWriter;
 
 /**
  * @desc Application
@@ -35,6 +38,11 @@ public class App extends Application {
         super.onCreate();
         instance = this;
         //startService(new Intent(this, LogService.class));
+        File rootDir = getExternalFilesDir("Log");
+        if (!rootDir.exists()) {
+            rootDir.mkdirs();
+        }
+        LogWriter.getInstance().init(rootDir);
 
     }
 }

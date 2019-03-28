@@ -4,6 +4,11 @@ public class Constant {
 
     public static final String SERVERHOST = "gt.beevideo.tv";
 
+    /** 检测nat类型 */
+    public static final int SC_NAT_TYPE = 200;
+    /** 检测nat类型回包 */
+    public static final int SC_NAT_TYPE_BACK = 201;
+
     /**
      * 心跳
      */
@@ -77,6 +82,8 @@ public class Constant {
      * 已经重新登录
      */
     public static final int CALL_BACK_RELOGIN = 4;
+    /**  打印nat类型 */
+    public static final int CALL_BACK_NAT_TYPE = 5;
 
     //public static final String FILE_TS = "2b0b5e3e48a5433d9344e3616278f993.TS";
     public static final String FILE_ZIP = "2ac70c215b79466e90dcd3b8cd9cab48.zip";

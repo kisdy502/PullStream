@@ -18,7 +18,8 @@ public class UploadHelper {
 
     public static void upload() {
 
-        File dir = LogWriter.getInstance().createLogWriteDir();
+        File dir = LogWriter.getInstance().getLogDir();
+
         File[] logFiles = dir.listFiles();
 
         String url = "http://gt.beevideo.tv/p2pstat/api/uploadLogFile";

@@ -59,7 +59,7 @@ public class StunClient {
                 mSocket.send(bindingMsg);
 
                 Log.d(TAG, "Binding Request sent.");
-                Thread.sleep(500);
+                Thread.sleep(2000);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (UtilityException e) {
@@ -81,7 +81,8 @@ public class StunClient {
                 mSocket.send(dp);
                 mSocket.send(dp);
                 mSocket.send(dp);
-                Log.d(TAG, "Send test message to device " + remoteDevice.ip + " : " + remoteDevice.port);
+                Log.d(TAG, "发给目标主机:" + remoteDevice.ip + ":" + remoteDevice.port);
+                Log.d(TAG, "发送内容:" + someData);
 
                 // Ask STUN server send binding response to the remote device.
                 // When remote device received the binding response, it will send data back to open
@@ -99,9 +100,10 @@ public class StunClient {
                 byte[] data = sendMH.getBytes();
                 DatagramPacket bindingMsg = new DatagramPacket(data, data.length, InetAddress.getByName(stunServerAddress), stunServerPort);
                 mSocket.send(bindingMsg);
-                Log.d(TAG, "Binding Request with RESPONSE_ADDRESS sent.");
+                Log.d(TAG, "发给目标主机:" + stunServerAddress + ":" + stunServerPort);
+                Log.d(TAG, "发送内容:" + data.length);
 
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             } catch (UtilityException e) {
                 e.printStackTrace();
             } catch (MessageAttributeException e) {
@@ -114,7 +116,6 @@ public class StunClient {
                 e.printStackTrace();
             }
         }
-
         mIsHolePunchingSuccessful = false;
     }
 
@@ -124,6 +125,8 @@ public class StunClient {
                 String testMsg = "test|" + msg;
                 DatagramPacket dp = new DatagramPacket(testMsg.getBytes(), testMsg.getBytes().length, InetAddress.getByName(remoteDevice.ip), remoteDevice.port);
                 mSocket.send(dp);
+                Log.d(TAG, "发给目标主机:" + remoteDevice.ip + ":" + remoteDevice.port);
+                Log.d(TAG, "发送内容:" + testMsg);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -154,8 +157,9 @@ public class StunClient {
                     DatagramPacket responseMsg = new DatagramPacket(new byte[200], 200);
                     mSocket.receive(responseMsg);
 
-                    String content = new String(responseMsg.getData());
-                    Log.d(TAG, "content:" + content);
+                    String content = new String(responseMsg.getData()).trim();
+                    Log.d(TAG, "来自主机:" + responseMsg.getAddress() + ":" + responseMsg.getPort());
+                    Log.d(TAG, "udp内容:" + content);
                     if (content.startsWith("ok")) {
                         Log.d(TAG, "P2P communication OK");
                         mIsHolePunchingSuccessful = true;
@@ -171,28 +175,29 @@ public class StunClient {
                         MessageHeader receiveMH = MessageHeader.parseHeader(responseMsg.getData());
                         receiveMH.parseAttributes(responseMsg.getData());
 
-                        MappedAddress mappedAddress = (MappedAddress) receiveMH.getMessageAttribute(MessageAttribute.MessageAttributeType.MappedAddress);
+                        MappedAddress remoteAddress = (MappedAddress) receiveMH.getMessageAttribute
+                                (MessageAttribute.MessageAttributeType.MappedAddress);
                         ErrorCode ec = (ErrorCode) receiveMH.getMessageAttribute(MessageAttribute.MessageAttributeType.ErrorCode);
                         if (ec != null) {
                             Log.d(TAG, "Errorcode : " + ec.getResponseCode() + ", reason : " + ec.getReason());
                             continue;
                         }
 
-                        if (mappedAddress == null) {
+                        if (remoteAddress == null) {
                             Log.d(TAG, "Response does not contain a Mapped Address.");
                         } else {
-                            Log.d(TAG, "mappedAddress = " + mappedAddress.toString());
+                            Log.d(TAG, "mappedAddress = " + remoteAddress.toString());
 
                             if (mMappedAddress == null) { // Get mapped address of this device.
                                 mNeedRefreshMappedAddress = false;
-                                mMappedAddress = mappedAddress;
+                                mMappedAddress = remoteAddress;
 
                                 Log.d(TAG, "Get mapped address of this device");
                                 if (mListener != null) {
                                     mListener.onMappedAddressReceived(mMappedAddress);
                                 }
-                            } else if (!mMappedAddress.getAddress().getInetAddress().getHostAddress().equals(mappedAddress.getAddress().getInetAddress().getHostAddress())
-                                    || mMappedAddress.getPort() != mappedAddress.getPort()) { // Remote device wants to communicate with this device.
+                            } else if (!mMappedAddress.getAddress().getInetAddress().getHostAddress().equals(remoteAddress.getAddress().getInetAddress().getHostAddress())
+                                    || mMappedAddress.getPort() != remoteAddress.getPort()) { // Remote device wants to communicate with this device.
                                 Log.d(TAG, "Remote device wants to communicate with this device");
 
                                 if (mListener != null) {
@@ -200,9 +205,15 @@ public class StunClient {
                                 }
 
                                 // Send back any data to remote device to open the communication channel.
-                                Log.d(TAG, "Send test message to device " + mappedAddress.toString());
+                                Log.d(TAG, "Send test message to device " + remoteAddress.toString());
                                 String someData = "ok";
-                                mSocket.send(new DatagramPacket(someData.getBytes(), someData.getBytes().length, mappedAddress.getAddress().getInetAddress(), mappedAddress.getPort()));
+                                mSocket.send(new DatagramPacket(someData.getBytes(), someData
+                                        .getBytes().length, remoteAddress.getAddress()
+                                        .getInetAddress(), remoteAddress.getPort()));
+
+                                Log.d(TAG, "发给主机:" + remoteAddress.getAddress() + ":" +
+                                        remoteAddress.getPort());
+                                Log.d(TAG, "udp内容:" + someData);
                             }
                         }
                     }

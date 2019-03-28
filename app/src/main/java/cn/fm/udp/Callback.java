@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.logging.Logger;
 
 import cn.fm.p2p.App;
+import cn.fm.p2p.HttpTool;
 import cn.fm.p2p.P2PReceiver;
 
 class Callback {
@@ -18,7 +19,6 @@ class Callback {
             File file = new File(App.getInstance().getExternalFilesDir(""), filename);
             String md5 = HttpTool.getFileMD5String(file);
             String logStr = "p2p 下载" + filename + " success,md5 is:" + md5;
-            LogWriter.getInstance().info(logStr);
         } else if (code == Constant.CALL_BACK_FAIL) {
             logger.info("下载失败：" + code + " " + filename);
         } else if (code == Constant.CALL_BACK_NAT_FAIL) {
@@ -31,6 +31,8 @@ class Callback {
         } else if (code == 9999) {
             logger.info("登录成功");
             App.getInstance().setP2pLogin(true);
+        }else if (code == Constant.CALL_BACK_NAT_TYPE) {
+            logger.info("nat类型：" + code + " " + filename);
         }
         Intent intent = new Intent();
         intent.setPackage(App.getInstance().getPackageName());

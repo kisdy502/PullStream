@@ -1,7 +1,6 @@
 package cn.fm.p2p.item;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,16 +12,14 @@ import android.widget.Toast;
 import java.io.File;
 
 import cn.fm.p2p.App;
+import cn.fm.p2p.P2PJarLoader;
 import cn.fm.p2p.R;
+import cn.fm.p2p.UpdateJarTask;
 import cn.fm.p2p.UploadHelper;
-import cn.fm.p2p.activity.DownloadListActivity;
 import cn.fm.p2p.bean.AppInfo;
-import cn.fm.p2p.download.DownloadCallback;
-import cn.fm.p2p.download.DownloadInfo;
 import cn.fm.p2p.download.DownloadManager;
-import cn.fm.udp.LogWriter;
 import cn.fm.udp.Constant;
-import cn.fm.udp.HttpTool;
+import cn.fm.p2p.HttpTool;
 import cn.fm.udp.ServiceManager;
 import me.drakeet.multitype.ItemViewBinder;
 
@@ -110,7 +107,6 @@ public class ItemViewAppInfo extends ItemViewBinder<AppInfo, ItemViewAppInfo.Vie
                     servicejanManager.startService(Constant.SERVERHOST, dir, strfiles, Constant.SC_LOGIN);
 
                 } else if (id.equalsIgnoreCase("002")) {
-                    LogWriter.getInstance().info("p2pDownload" + Constant.FILE_MP4);
                     String dir = App.getInstance().getExternalFilesDir("").getAbsolutePath();
                     String file = Constant.FILE_MP4;
                     ServiceManager servicejanManager = new ServiceManager(App.getInstance());
@@ -131,9 +127,72 @@ public class ItemViewAppInfo extends ItemViewBinder<AppInfo, ItemViewAppInfo.Vie
                         }
                     }.start();
                 } else if (id.equalsIgnoreCase("005")) {
-                    Intent intent = new Intent(App.getInstance(), DownloadListActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    App.getInstance().startActivity(intent);
+                    //反射调用下载
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            P2PJarLoader.cpAssetToFile();
+                            P2PJarLoader.startLogin();
+                        }
+                    }.start();
+
+                } else if (id.equalsIgnoreCase("006")) {
+                    //反射调用下载
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            P2PJarLoader.cpAssetToFile();
+                            P2PJarLoader.startDownload();
+                        }
+                    }.start();
+                } else if (id.equalsIgnoreCase("007")) {
+                    final String dir = App.getInstance().getExternalFilesDir("p2pFiles").getAbsolutePath();
+                    final String strfiles = Constant.FILE_MP4 + "," + Constant.FILE_ZIP;
+
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            HttpTool.checkAndDownloadFiles(dir, strfiles, new DownloadManager.ProgressListener() {
+
+                                @Override
+                                public void onFailed(final String downloadUrl, int result, String desc) {
+                                    holder.itemView.post(new Runnable() {
+                                        @SuppressLint("WrongConstant")
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(App.getInstance(), downloadUrl + "下载失败", 1).show();
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onUpdate(String downloadUrl, long bytesRead, long contentLength,
+                                                     boolean done) {
+                                    final float progress = 100 * bytesRead * 1.0f / contentLength;
+                                    holder.tvCreated.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            holder.tvCreated.setText("下载进度:" + progress + "%");
+                                        }
+                                    });
+                                    if (done) {
+                                        holder.itemView.post(new Runnable() {
+                                            @SuppressLint("WrongConstant")
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(App.getInstance(), "下载完成", 1).show();
+                                            }
+                                        });
+                                    }
+
+                                }
+
+                            });
+                        }
+                    }.start();
+                } else if (id.equalsIgnoreCase("008")) {
+                    UpdateJarTask task = new UpdateJarTask(App.getInstance());
+                    new Thread(task).start();
                 }
             }
         });

@@ -91,15 +91,36 @@ public class DataHelper {
 
         AppInfo appInfo05 = new AppInfo();
         appInfo05.setId("005");
-        appInfo05.setAppName("下载功能测试");
+        appInfo05.setAppName("反射登录");
         appInfo05.setAppPackage("cn.aikan.live");
         appInfo05.setAppDate("2019-01");
 
-        list.add(appInfo00);
-        list.add(appInfo02);
-        list.add(appInfo03);
-        list.add(appInfo04);
+        AppInfo appInfo06 = new AppInfo();
+        appInfo06.setId("006");
+        appInfo06.setAppName("反射p2p下载");
+        appInfo06.setAppPackage("cn.aikan.live");
+        appInfo06.setAppDate("2019-01");
+
+        AppInfo appInfo07 = new AppInfo();
+        appInfo07.setId("007");
+        appInfo07.setAppName("http下载");
+        appInfo07.setAppPackage("cn.aikan.live");
+        appInfo07.setAppDate("2019-01");
+
+        AppInfo appInfo08 = new AppInfo();
+        appInfo08.setId("008");
+        appInfo08.setAppName("检测jar更新");
+        appInfo08.setAppPackage("cn.aikan.live");
+        appInfo08.setAppDate("2019-01");
+
+//        list.add(appInfo00);
+//        list.add(appInfo02);
+//        list.add(appInfo03);
+//        list.add(appInfo04);
         list.add(appInfo05);
+        list.add(appInfo06);
+        list.add(appInfo07);
+        list.add(appInfo08);
 
     }
 

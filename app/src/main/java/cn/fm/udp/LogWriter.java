@@ -9,8 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import cn.fm.p2p.App;
-
 public class LogWriter {
 
     private static Logger logger = Logger.getLogger(UDPClient.class.getName());
@@ -19,49 +17,40 @@ public class LogWriter {
         return Holder.writer;
     }
 
+    private File logDir;
+
     private File logFile;
+
+    public void init(File rootDir) {
+        logDir = rootDir;
+    }
 
     private final static class Holder {
         private final static LogWriter writer = new LogWriter();
     }
 
-    private final static String LOG_DIRNAME = "Log";
 
-    private void writeLog(String data) {
+    public File getLogDir() {
+        return logDir;
+    }
+
+    public void writeLog(String data) {
         if (logFile == null || !logFile.exists()) {
             logFile = createLogFile();
         }
         writeData(logFile, data);
     }
 
-    public void info(String data) {
-        writeLog(data);
+    public void consoleLog(String data) {
         logger.info(data);
     }
 
     public File createLogFile() {
-        File logDir = createLogWriteDir();
         String logFileName = "Log_".concat(timestampToDateString(System
                 .currentTimeMillis(), "yyyyMMdd")).concat(".txt");
         File logFile = new File(logDir, logFileName);
         return logFile;
     }
-
-    /**
-     * 日志存储路径
-     *
-     * @return
-     */
-    public File createLogWriteDir() {
-        File file = new File(App.getInstance().getExternalFilesDir(""), LOG_DIRNAME);
-        if (!file.exists()) {
-            file.mkdirs();
-            file.setReadable(true);
-            file.setWritable(true);
-        }
-        return file;
-    }
-
 
     private void writeData(File logFile, String data) {
         boolean created = true;

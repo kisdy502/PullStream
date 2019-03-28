@@ -26,7 +26,7 @@ import cn.fm.p2p.item.ItemViewAdvert;
 import cn.fm.p2p.item.ItemViewAppInfo;
 import cn.fm.p2p.item.LineViewBinder;
 import cn.fm.udp.Constant;
-import cn.fm.udp.HttpTool;
+import cn.fm.p2p.HttpTool;
 import cn.fm.udp.LogWriter;
 import me.drakeet.multitype.ClassLinker;
 import me.drakeet.multitype.ItemViewBinder;
@@ -130,7 +130,8 @@ public class MainActivity extends AppCompatActivity {
         if (files != null) {
             for (File file : files) {
                 if (!file.exists()) {
-                    Toast.makeText(App.getInstance(), "file:" + file.getName() + ",还未下载", 1).show();
+                    Toast.makeText(App.getInstance(), "file:" + file.getName() + ",还未下载",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -140,11 +141,11 @@ public class MainActivity extends AppCompatActivity {
         String model = Build.MODEL;
         String brand = android.os.Build.BRAND;
         String manufacturer = Build.MANUFACTURER;
-        LogWriter.getInstance().info("model:" + model);
-        LogWriter.getInstance().info("brand:" + brand);
-        LogWriter.getInstance().info("manufacturer:" + manufacturer);
-        LogWriter.getInstance().info("VERSION:" + Build.VERSION.SDK);
-        LogWriter.getInstance().info("VERSION:" + Build.VERSION.RELEASE);
+        LogWriter.getInstance().consoleLog("model:" + model);
+        LogWriter.getInstance().consoleLog("brand:" + brand);
+        LogWriter.getInstance().consoleLog("manufacturer:" + manufacturer);
+        LogWriter.getInstance().consoleLog("VERSION:" + Build.VERSION.SDK);
+        LogWriter.getInstance().consoleLog("VERSION:" + Build.VERSION.RELEASE);
 
     }
 }

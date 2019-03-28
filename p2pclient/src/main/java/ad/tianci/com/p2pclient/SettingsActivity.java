@@ -18,7 +18,7 @@ public class SettingsActivity extends Activity {
 
     public static final String DEFAULT_STUN_SERVER_ADDRESS = "stun.ekiga.net";
     public static final int DEFAULT_STUN_SERVER_PORT = 3478;
-    public static final String DEFAULT_REGISTRATION_SERVER_ADDRESS = "usermgr.jd-app.com";
+    public static final String DEFAULT_REGISTRATION_SERVER_ADDRESS = "192.168.66.91:8080";
     public static final int DEFAULT_REGISTRATION_SERVER_PORT = -1;
 
     @Override
@@ -26,10 +26,10 @@ public class SettingsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
 
-        mStunServerEdit = (EditText)findViewById(R.id.stun_server_edit);
-        mRegistrationServerEdit = (EditText)findViewById(R.id.registration_server_edit);
+        mStunServerEdit = (EditText) findViewById(R.id.stun_server_edit);
+        mRegistrationServerEdit = (EditText) findViewById(R.id.registration_server_edit);
 
-        Button btnReset = (Button)findViewById(R.id.btn_reset);
+        Button btnReset = (Button) findViewById(R.id.btn_reset);
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
